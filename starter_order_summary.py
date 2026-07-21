@@ -61,26 +61,32 @@ def parse_number(raw_value: str, field_name: str, issues: list[str], order_id: s
         return None
 
 
-def normalize_label(value: str) -> str:
-    """Standardize spacing and capitalization for categorical labels."""
+def normalize_label(value: str | None) -> str:
+    """Standardize spacing and capitalization for categorical labels.
+
+    Tolerate None values coming from missing CSV columns.
+    """
+    if value is None:
+        return ""
     return value.strip().title()
 
 
 def clean_order(row: dict[str, str], issues: list[str]) -> dict[str, str | float] | None:
     """Clean one order row and calculate net sales for usable completed orders."""
-    order_id = row["order_id"]
-    cleaned_date = standardize_date(row["order_date"])
+    # Use .get to avoid KeyError when headers are missing in the CSV
+    order_id = row.get("order_id") or "<missing order_id>"
+    cleaned_date = standardize_date(row.get("order_date", ""))
     if cleaned_date is None:
-        issues.append(f"{order_id}: invalid order_date '{row['order_date']}'")
+        issues.append(f"{order_id}: invalid order_date '{row.get('order_date')}'")
         return None
 
-    units = parse_number(row["units_sold"], "units_sold", issues, order_id)
-    price = parse_number(row["unit_price"], "unit_price", issues, order_id)
-    discount = parse_number(row["discount_pct"], "discount_pct", issues, order_id)
+    units = parse_number(row.get("units_sold"), "units_sold", issues, order_id)
+    price = parse_number(row.get("unit_price"), "unit_price", issues, order_id)
+    discount = parse_number(row.get("discount_pct"), "discount_pct", issues, order_id)
     if units is None or price is None or discount is None:
         return None
 
-    status = normalize_label(row["order_status"])
+    status = normalize_label(row.get("order_status"))
     if status != "Completed":
         return None
 
@@ -97,9 +103,9 @@ def clean_order(row: dict[str, str], issues: list[str]) -> dict[str, str | float
     return {
         "order_id": order_id,
         "order_date": cleaned_date,
-        "region": normalize_label(row["region"]),
-        "product_category": normalize_label(row["product_category"]),
-        "sales_channel": normalize_label(row["sales_channel"]),
+        "region": normalize_label(row.get("region")),
+        "product_category": normalize_label(row.get("product_category")),
+        "sales_channel": normalize_label(row.get("sales_channel")),
         "units_sold": units,
         "unit_price": round(price, 2),
         "discount_pct": discount,
