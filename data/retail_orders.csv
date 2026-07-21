@@ -1,4 +1,4 @@
-order_id,order_date,customer_id,product_id,quantity,unit_price,total,store,region
+order_id,order_date,customer_id,product_id,units_sold,unit_price,total,store,region
 ORD-0001,2026-07-20,CUST001,PROD_A,2,19.99,39.98,Online,North
 ORD-0002,2026-07-20,CUST002,PROD_B,1,49.50,49.50,Store-12,East
 ORD-0003,2026-07-19,CUST003,PROD_C,3,9.99,29.97,Store-03,West
