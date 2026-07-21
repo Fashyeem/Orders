@@ -13,7 +13,10 @@ from datetime import datetime
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
+# ROOT should point to the repository root (the directory containing this file).
+# Path(__file__).resolve().parents[1] went one level too high when the script
+# was executed from the repository; use .parent instead.
+ROOT = Path(__file__).resolve().parent
 DATA_FILE = ROOT / "data" / "retail_orders.csv"
 OUTPUT_DIR = ROOT / "outputs"
 
@@ -26,22 +29,33 @@ def load_orders() -> list[dict[str, str]]:
 
 def standardize_date(raw_date: str) -> str | None:
     """Return an ISO date value, or None when the input cannot be interpreted."""
-    # TODO 1: Use AI inline completion or a short generated snippet to support
-    # YYYY-MM-DD and DD/MM/YYYY. Invalid dates must return None.
-    for fmt in ["%Y-%m-%d", "%d/%m/%Y"]:
+    # Support common variations in the data: YYYY-MM-DD, DD/MM/YYYY and YYYY/MM/DD
+    for fmt in ["%Y-%m-%d", "%d/%m/%Y", "%Y/%m/%d"]:
         try:
-            dt = datetime.strptime(raw_date, fmt)
+            dt = datetime.strptime(raw_date.strip(), fmt)
             return dt.strftime("%Y-%m-%d")
-        except ValueError:
+        except (ValueError, AttributeError):
             continue
     return None
 
 
 def parse_number(raw_value: str, field_name: str, issues: list[str], order_id: str) -> float | None:
-    """Convert a numeric string to float and record unusable values."""
-    # TODO 2: Complete numeric conversion with a helpful issue message.
+    """Convert a numeric string to float and record unusable values.
+
+    Treat empty strings and common non-numeric tokens (N/A, na, null) as invalid
+    and record a helpful issue message that includes the field name and value.
+    """
+    if raw_value is None:
+        issues.append(f"{order_id}: invalid {field_name} '{raw_value}'")
+        return None
+
+    sval = raw_value.strip()
+    if sval == "" or sval.upper() in {"N/A", "NA", "NULL"}:
+        issues.append(f"{order_id}: invalid {field_name} '{raw_value}'")
+        return None
+
     try:
-        return float(raw_value)
+        return float(sval)
     except ValueError:
         issues.append(f"{order_id}: invalid {field_name} '{raw_value}'")
         return None
@@ -70,14 +84,13 @@ def clean_order(row: dict[str, str], issues: list[str]) -> dict[str, str | float
     if status != "Completed":
         return None
 
-    # TODO 3: Ask AI for a small refactoring suggestion so validation is clear.
     # Discounts below 0 or above 100 should be logged and excluded.
     if discount < 0 or discount > 100:
         issues.append(f"{order_id}: invalid discount_pct '{discount}' (must be 0-100)")
         return None
 
-    # SEEDED BUG (FIXED): discount_pct is stored as a percentage value, not a multiplier.
-    # Must divide by 100 to convert percentage to decimal multiplier.
+    # discount_pct is stored as a percentage value, not a multiplier.
+    # Convert percentage to decimal multiplier when computing net sales.
     gross_sales = units * price
     net_sales = gross_sales - (gross_sales * discount / 100)
 
@@ -96,18 +109,17 @@ def clean_order(row: dict[str, str], issues: list[str]) -> dict[str, str | float
 
 def create_daily_summary(cleaned_orders: list[dict[str, str | float]]) -> list[dict[str, str | float]]:
     """Aggregate usable orders by date."""
-    # TODO 4: Generate a short code snippet that aggregates order_count and
-    # total_net_sales by order_date, then returns rows sorted by date.
     daily = defaultdict(lambda: {"order_count": 0, "total_net_sales": 0.0})
-    
+
     for order in cleaned_orders:
         date = order["order_date"]
         daily[date]["order_count"] += 1
         daily[date]["total_net_sales"] += order["net_sales"]
-    
+
+    # Return rows sorted by date (ISO formatted date strings sort lexically)
     return sorted(
         [{"order_date": date, **metrics} for date, metrics in daily.items()],
-        key=lambda x: x["order_date"]
+        key=lambda x: x["order_date"],
     )
 
 
@@ -130,7 +142,7 @@ def run_summary() -> None:
             cleaned_orders.append(cleaned)
 
     summary = create_daily_summary(cleaned_orders)
-    OUTPUT_DIR.mkdir(exist_ok=True)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     write_csv(
         OUTPUT_DIR / "cleaned_completed_orders.csv",
