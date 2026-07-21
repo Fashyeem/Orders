@@ -1,0 +1,46 @@
+name: Run Order Summary
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    # Run daily at 9 AM UTC
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+jobs:
+  run-summary:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Run order summary script
+        run: python starter_order_summary.py
+
+      - name: Upload outputs
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: order-summary-outputs
+          path: outputs/
+          retention-days: 30
+
+      - name: Display results
+        if: always()
+        run: |
+          echo "=== Issue Log ==="
+          cat outputs/issue_log.txt 2>/dev/null || echo "No issues found"
+          echo ""
+          echo "=== Daily Summary Preview ==="
+          head -5 outputs/daily_sales_summary.csv 2>/dev/null || echo "No summary data"
