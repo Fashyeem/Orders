@@ -1,6 +1,37 @@
-order_id,order_date,customer_id,product_id,units_sold,unit_price,total,store,region
-ORD-0001,2026-07-20,CUST001,PROD_A,2,19.99,39.98,Online,North
-ORD-0002,2026-07-20,CUST002,PROD_B,1,49.50,49.50,Store-12,East
-ORD-0003,2026-07-19,CUST003,PROD_C,3,9.99,29.97,Store-03,West
-ORD-0004,2026-07-18,CUST004,PROD_A,5,19.99,99.95,Online,South
-ORD-0005,2026-07-18,CUST005,PROD_D,2,14.25,28.50,Store-07,North
+order_id,order_date,region,store_type,product_category,units_sold,unit_price,discount_pct,order_status,sales_channel
+ORD-1001,2026-04-01,North,Supermarket,Groceries,4,215.50,5,Completed,In-store
+ORD-1002,01/04/2026,South,Convenience,Personal Care,2,349.00,10, completed ,Online
+ORD-1003,2026-04-01,East,Supermarket,beverages,8,85.75,0,Completed,In-store
+ORD-1004,2026/04/02,West,Express,Snacks,3,120.00,5,Completed,Mobile
+ORD-1005,02/04/2026,North,Supermarket,Household,1,899.00,15,Returned,Online
+ORD-1006,2026-04-02,South,Supermarket,Groceries,6,130.50,5,Completed,In-store
+ORD-1007,2026-04-03,East,Convenience,PERSONAL CARE,2,425.00,10,Completed,Mobile
+ORD-1008,03/04/2026,West,Supermarket,Beverages,12,55.00,0,Completed,In-store
+ORD-1009,2026-04-03,North,Express,Snacks,5,95.50,N/A,Completed,Online
+ORD-1010,2026-04-04,South,Supermarket,Household,2,780.00,20,Completed,In-store
+ORD-1011,04/04/2026,East,Supermarket,Groceries,10,74.25,5,Cancelled,Online
+ORD-1012,2026-04-04,West,Convenience,Beverages,4,149.00,10,Completed,Mobile
+ORD-1013,2026-04-05,North,Supermarket,Personal care,3,275.00,0,Completed,In-store
+ORD-1014,05/04/2026,South,Express,Snacks,7,65.00,5,completed,Mobile
+ORD-1015,2026-04-05,East,Supermarket,Household,1,1250.00,10,Completed,Online
+ORD-1016,2026-04-06,West,Convenience,Groceries,5,190.25,5,Returned,In-store
+ORD-1017,06/04/2026,North,Supermarket,Beverages,6,110.00,0,Completed,Online
+ORD-1018,2026-04-06,South,Supermarket,Personal Care,two,399.00,5,Completed,In-store
+ORD-1019,2026-04-07,East,Express,Snacks,9,42.50,5,Completed,Mobile
+ORD-1020,07/04/2026,West,Supermarket,Household,2,,10,Completed,Online
+ORD-1021,2026-04-07,North,Convenience,Groceries,3,245.00,5, Completed ,In-store
+ORD-1022,2026-04-08,South,Supermarket,BEVERAGES,15,47.00,0,Completed,In-store
+ORD-1023,08/04/2026,East,Supermarket,Personal Care,1,699.00,120,Completed,Online
+ORD-1024,2026-04-08,West,Express,Snacks,4,80.00,10,Cancelled,Mobile
+ORD-1025,2026-04-09,North,Supermarket,Household,2,450.00,5,Completed,Online
+ORD-1026,09/04/2026,South,Convenience,Groceries,7,105.00,0,Completed,In-store
+ORD-1027,2026-04-09,East,Supermarket,Beverages,8,76.00,5,Returned,In-store
+ORD-1028,2026-04-10,West,Supermarket,Personal Care,3,320.00,10,Completed,Online
+ORD-1029,10/04/2026,North,Express,Snacks,6,60.00,5,Completed,Mobile
+ORD-1030,2026-04-10,South,Supermarket,Household,1,999.00,10,Completed,In-store
+ORD-1031,2026-13-10,East,Convenience,Groceries,3,210.00,5,Completed,Online
+ORD-1032,11/04/2026,West,Supermarket,Beverages,5,89.00,0,Completed,In-store
+ORD-1033,2026-04-11,North,Supermarket,Personal Care,2,510.00,5,Completed,Online
+ORD-1034,2026-04-12,South,Express,Snacks,3,88.00,10,Completed,Mobile
+ORD-1035,12/04/2026,East,Supermarket,Household,1,670.00,5,Returned,In-store
+ORD-1036,2026-04-12,West,Convenience,Groceries,4,145.00,0,Completed,Online
